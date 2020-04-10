@@ -33,6 +33,8 @@ pip install psychopy --no-deps
 ```
 
 ## Available Notebooks
+* **Free Record**: This notebook is to allow you to freely record your own data for any duration for any desired task 
+not included in the notebooks.
 * **N170**:
 * **P300**:
 * **SSVEP**:
@@ -61,7 +63,7 @@ when loading the entire dataset. This can not be done in the same way as for the
     * *Data Recording*: **WORKING - 4/10/2020**
     * *Visualization*:
     * *Classification Accuracy*:
-* **SSVEP**: The SSVEP requires the most work at the moment.
+* **SSVEP**: 
     * *Stimulus Presentation*: **WORKING - 4/10/2020**
     * *Data Recording*: **WORKING - 4/10/2020**
     * *Visualization*:
