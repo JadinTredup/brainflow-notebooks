@@ -52,14 +52,17 @@ when loading the entire dataset. This can not be done in the same way as for the
 
 ## Notebook Statuses
 * **N170**:  
-    * *Stimulus Presentation*: (The original stimulus presentation is working, needs to be tested in the new notebook) 
+    * *Stimulus Presentation*: **WORKING - 4/10/2020**
+    * *Data Recording*: **WORKING - 4/10/2020**
     * *Visualization*:
-    * *Classification Accuracy*:
+    * *Classification Accuracy*: 
 * **P300**:
-    * *Stimulus Presentation*: (The original stimulus presentation is working, needs to be tested in the new notebook) 
+    * *Stimulus Presentation*: **WORKING - 4/10/2020**
+    * *Data Recording*: **WORKING - 4/10/2020**
     * *Visualization*:
     * *Classification Accuracy*:
 * **SSVEP**: The SSVEP requires the most work at the moment.
-    * *Stimulus Presentation*: (The original stimulus presentation is working, needs to be tested in the new notebook) 
+    * *Stimulus Presentation*: **WORKING - 4/10/2020**
+    * *Data Recording*: **WORKING - 4/10/2020**
     * *Visualization*:
     * *Classification Accuracy*:

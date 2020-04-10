@@ -102,6 +102,7 @@ class eventRelatedPotential:
         self.params = None
         self.board = None
         self.max_trials = 500
+        self._setup_trial()
 
     def initialize_eeg(self, board_type='synthetic', connection_method='usb', usb_port=None):
         self.board_id, self.params = get_board_info(board_type, connection_method, usb_port)
@@ -113,7 +114,7 @@ class eventRelatedPotential:
         if self.erp == 'n170':
             self.image_type = np.random.binomial(1, 0.5, self.max_trials)
         if self.erp == 'p300':
-            self.image_type = np.random.binomial(1, 0.15, self.max_trials)
+            self.image_type = np.random.binomial(1, 0.5, self.max_trials)
 
         self.trials = DataFrame(dict(image_type=self.image_type,
                                      timestamp=np.zeros(self.max_trials)))
@@ -129,12 +130,12 @@ class eventRelatedPotential:
     def _setup_graphics(self):
         self.mywin = visual.Window([1600, 900], monitor='testMonitor', units="deg")
         if self.erp == 'n170':
-            faces = list(map(self.load_image, glob('stim/face_house/faces/*_3.jpg')))
-            houses = list(map(self.load_image, glob('stim/face_house/houses/*.3.jpg')))
+            faces = list(map(self._load_image, glob('stim/face_house/faces/*_3.jpg')))
+            houses = list(map(self._load_image, glob('stim/face_house/houses/*.3.jpg')))
             self.stim = [houses, faces]
         if self.erp == 'p300':
             targets = list(map(self._load_image, glob('stim/cats_dogs/target-*.jpg')))
-            nontargets = list(map(self._load_image, glob('stim/cats_dogs/target-*.jpg')))
+            nontargets = list(map(self._load_image, glob('stim/cats_dogs/nontarget-*.jpg')))
             self.stim = [nontargets, targets]
 
     def _load_image(self, fn):
@@ -183,7 +184,7 @@ class eventRelatedPotential:
 
         # cleanup the session
         self.board.stop_stream()
-        self.board_prepared = False
+        #self.board_prepared = False
         data = self.board.get_board_data()
         data_fn, event_fn = get_fns(subject, run, self.erp)
         DataFilter.write_file(data, data_fn, 'w')
@@ -199,6 +200,7 @@ class steadyStateEvokedPotentials:
         self.params = None
         self.board = None
         self.max_trials = 500
+        self._setup_trials()
 
     def initialize_eeg(self, board_type='synthetic', connection_method='usb', usb_port=None):
         BoardShim.enable_dev_board_logger()
@@ -210,11 +212,6 @@ class steadyStateEvokedPotentials:
         self.stim_freq = np.random.binomial(1, 0.5, self.max_trials)
         self.trials = DataFrame(dict(stim_freq=self.stim_freq,
                                      timestamp=np.zeros(self.max_trials)))
-
-    def _setup_task(self):
-        if self.erp == 'n170':
-            self.markernames = ['houses', 'faces']
-            self.markers = [1, 2]
 
     def _setup_graphics(self):
         soa = 0.3

@@ -7,7 +7,7 @@ from mne.io import RawArray
 from mne.io.edf import read_raw_edf
 from mne.datasets import eegbci
 from mne.event import find_events
-from mne.channels import read_montage
+from mne.channels import make_standard_montage
 
 from brainflow.board_shim import BoardShim, BoardIds
 from brainflow.data_filter import DataFilter, FilterTypes, AggOperations
@@ -159,7 +159,8 @@ class brainflowDataset:
     def bci_to_raw(self, data):
         eeg_data = data[self.eeg_info[0], :]
         ch_types = ['eeg'] * 16
-        montage = read_montage('standard_1020')
+        #montage = make_standard_montage('standard_1005')
+        montage = make_standard_montage('standard_1020')
         info = create_info(ch_names=self.eeg_info[2], sfreq=self.eeg_info[1], ch_types=ch_types, montage=montage)
         raw = RawArray(eeg_data, info)
         return raw
