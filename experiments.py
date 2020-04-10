@@ -93,6 +93,47 @@ def init_flicker_stim(frame_rate, cycle, soa):
             'n_cycles' : n_cycles}
 
 
+class freeRecording:
+
+    def __init__(self, activity=None):
+        self.board_prepared = False
+        self.board_id = None
+        self.params = None
+        self.board = None
+        self._setup_session(activity)
+
+    def initialize_eeg(self, board_type='synthetic', connection_method='usb', usb_port=None):
+        self.board_id, self.params = get_board_info(board_type, connection_method, usb_port)
+        self.board = BoardShim(self.board_id, self.params)
+        self.board.prepare_session()
+        self.board_prepared = True
+
+    def _setup_session(self, activity):
+        if activity == None:
+            activity = 'UNLABELLED'
+
+        self.session_name = activity
+
+    def record(self, duration, subject, run):
+        if self.board_prepared == False:
+            self.board.prepare_session()
+            self.board_prepared = True
+
+        print("Beginning EEG Stream; Wait 5 seconds for signal to settle... \n")
+        self.board.start_stream()
+        sleep(5)
+
+        print(f"Starting recording for {duration} seconds... \n")
+        sleep(duration)
+
+        # cleanup the session
+        self.board.stop_stream()
+        # self.board_prepared = False
+        data = self.board.get_board_data()
+        data_fn, event_fn = get_fns(subject, run, self.session_name)
+        DataFilter.write_file(data, data_fn, 'w')
+
+
 class eventRelatedPotential:
 
     def __init__(self, erp='n170'):
