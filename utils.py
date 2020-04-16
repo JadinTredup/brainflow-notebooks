@@ -3,8 +3,8 @@ from collections import OrderedDict
 import seaborn as sns
 from matplotlib import pyplot as plt
 
-OPENBCI_STANDARD = ['fp1', 'fp2', 'c3', 'c4', 'p7', 'p8', 'o1', 'o2',
-                    'f7' , 'f8' , 'f3', 'f4', 't7', 't8', 'p3', 'p4']
+OPENBCI_STANDARD = ['Fp1', 'Fp2', 'C3', 'C4', 'P7', 'P8', 'O1', 'O2',
+                    'F7' , 'F8' , 'F3', 'F4', 'T7', 'T8', 'P3', 'P4']
 
 
 def get_fns(subject, run, paradigm):

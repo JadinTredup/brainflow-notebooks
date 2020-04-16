@@ -12,7 +12,7 @@ from brainflow import DataFilter, BoardShim, BoardIds, BrainFlowInputParams
 from utils import get_fns
 
 
-STD_PORT = 'dev/ttyUSB0'
+STD_PORT = '/dev/ttyUSB0'
 
 
 def get_board_info(board_type='synthetic', connection='usb', usb_port=None):
