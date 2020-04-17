@@ -1,6 +1,7 @@
 import os
 from collections import OrderedDict
 import seaborn as sns
+import pandas as pd
 from matplotlib import pyplot as plt
 
 OPENBCI_STANDARD = ['Fp1', 'Fp2', 'C3', 'C4', 'P7', 'P8', 'O1', 'O2',

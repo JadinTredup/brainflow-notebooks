@@ -64,6 +64,7 @@ class brainflowDataset:
         event_fn = subject_name + '_' + self.erp_type + '_' + str(run) + '_EVENTS.csv'
         data_path = os.path.join('data', data_fn)
         event_path = os.path.join('data', event_fn)
+        print(data_path)
         data = DataFilter.read_file(data_path)
 
         # remove beginning 5 seconds where signal settles
@@ -161,8 +162,9 @@ class brainflowDataset:
         ch_types = ['eeg'] * 16
         #montage = make_standard_montage('standard_1005')
         montage = make_standard_montage('standard_1020')
-        info = create_info(ch_names=self.eeg_info[2], sfreq=self.eeg_info[1], ch_types=ch_types, montage=montage)
+        info = create_info(ch_names=self.eeg_info[2], sfreq=self.eeg_info[1], ch_types=ch_types)
         raw = RawArray(eeg_data, info)
+        raw.set_montage(montage)
         return raw
 
     def load_session_to_raw(self, subject_name, run, preprocess=True):
