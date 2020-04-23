@@ -255,7 +255,7 @@ class steadyStateEvokedPotentials:
                                      timestamp=np.zeros(self.max_trials)))
 
     def _setup_graphics(self):
-        soa = 0.3
+        soa = 3.0
         self.mywin = visual.Window([1600, 900], monitor='testMonitor', units="deg", wintype='pygame')
         if self.paradigm == 'ssvep':
             grating = visual.GratingStim(win=self.mywin, mask='circle', size=80, sf=0.2)
@@ -263,6 +263,7 @@ class steadyStateEvokedPotentials:
             frame_rate = np.round(self.mywin.getActualFrameRate())
             stim_patterns = [init_flicker_stim(frame_rate, 2, soa),
                                   init_flicker_stim(frame_rate, 3, soa)]
+            print(stim_patterns)
 
         return grating, grating_neg, stim_patterns
 
@@ -271,7 +272,8 @@ class steadyStateEvokedPotentials:
 
     def run_trial(self, duration, subject, run):
         # session information
-        iti = 0.4
+        iti = 0.5
+        soa = 3.0
         jitter = 0.2
         record_duration = np.float32(duration)
         print("Beginning EEG Stream; Wait 5 seconds for signal to settle... \n")
@@ -315,6 +317,7 @@ class steadyStateEvokedPotentials:
         self.board.stop_stream()
         data = self.board.get_board_data()
         data_fn, event_fn = get_fns(subject, run, self.paradigm)
+        print(event_fn)
         DataFilter.write_file(data, data_fn, 'w')
         self.mywin.close()
-        self.trials.to_csv()
+        self.trials.to_csv(event_fn)

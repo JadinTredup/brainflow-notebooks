@@ -4,8 +4,13 @@ import seaborn as sns
 import pandas as pd
 from matplotlib import pyplot as plt
 
+SYNTHETIC_CHANNELS = ['T7', 'CP5', 'FC5', 'C3', 'C4', 'FC6', 'CP6', 'T8']
+
 OPENBCI_STANDARD = ['Fp1', 'Fp2', 'C3', 'C4', 'P7', 'P8', 'O1', 'O2',
                     'F7' , 'F8' , 'F3', 'F4', 'T7', 'T8', 'P3', 'P4']
+
+SDESIGN = ['O1',  'PO3',  'P7' , 'CP5', 'CP2', 'P8' ,  'PO4', 'O2',
+           'P3', 'FC5', 'C3', 'CP1', 'P4', 'C4', 'FC6', 'CP6']
 
 
 def get_fns(subject, run, paradigm):

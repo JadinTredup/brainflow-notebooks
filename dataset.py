@@ -16,10 +16,10 @@ from utils import OPENBCI_STANDARD
 
 
 class brainflowDataset:
-    def __init__(self, erp, subject):
+    def __init__(self, paradigm, subject, board_type):
         # Initialize class variables
-        self.erp_type = erp
-        self.board_type = 'daisy'
+        self.paradigm = paradigm
+        self.board_type = board_type
         self.eeg_info = self._get_source_info()
         self.subject = subject
 
@@ -60,8 +60,8 @@ class brainflowDataset:
             data
             events
         """
-        data_fn = subject_name + '_' + self.erp_type + '_' + str(run) + '.csv'
-        event_fn = subject_name + '_' + self.erp_type + '_' + str(run) + '_EVENTS.csv'
+        data_fn = subject_name + '_' + self.paradigm + '_' + str(run) + '.csv'
+        event_fn = subject_name + '_' + self.paradigm + '_' + str(run) + '_EVENTS.csv'
         data_path = os.path.join('data', data_fn)
         event_path = os.path.join('data', event_fn)
         print(data_path)
@@ -159,7 +159,7 @@ class brainflowDataset:
 
     def bci_to_raw(self, data):
         eeg_data = data[self.eeg_info[0], :]
-        ch_types = ['eeg'] * 16
+        ch_types = ['eeg'] * len(self.eeg_info[0])
         #montage = make_standard_montage('standard_1005')
         montage = make_standard_montage('standard_1020')
         info = create_info(ch_names=self.eeg_info[2], sfreq=self.eeg_info[1], ch_types=ch_types)
