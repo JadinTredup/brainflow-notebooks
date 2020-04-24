@@ -120,7 +120,6 @@ not included in the notebooks.
 * **P300**:
 * **SSVEP**:
 
-## Expanding the Repository
 
 # Repository Status
 The integration of the stimulus presentations with OpenBCI/Brainflow is work I have already completed and tested. This is 
@@ -130,22 +129,24 @@ this section accordingly.
 
 ## General TO-DO:
 
-1. **Combine data and events during stream:** as of right now the data and events are saved in separate files during recording and then segmented and lined up 
+- [ ] **Combine data and events during stream:** as of right now the data and events are saved in separate files during recording and then segmented and lined up 
 when loading the entire dataset. This can not be done in the same way as for the Muse because LSL is not beting used here.
+- [ ] **Add support for BrainBit:** Add the necessary lines to functions in both `experiments.py` and `dataset.py` to 
+accommodate the BrainBit headset. 
 
 ## Notebook Statuses
 * **N170**:  
-    * *Stimulus Presentation*: **WORKING - 4/10/2020**
-    * *Data Recording*: **WORKING - 4/10/2020**
-    * *Visualization*:
-    * *Classification Accuracy*: 
+    - [X] *Stimulus Presentation*: **WORKING - 4/10/2020**
+    - [X] *Data Recording*: **WORKING - 4/10/2020**
+    - [ ] *Visualization*:
+    - [X] *Classification Accuracy*: **WORKING - 4/10/2020**
 * **P300**:
-    * *Stimulus Presentation*: **WORKING - 4/10/2020**
-    * *Data Recording*: **WORKING - 4/10/2020**
-    * *Visualization*:
-    * *Classification Accuracy*:
+    - [X] *Stimulus Presentation*: **WORKING - 4/10/2020**
+    - [X] *Data Recording*: **WORKING - 4/10/2020**
+    - [ ] *Visualization*:
+    - [ ] *Classification Accuracy*:
 * **SSVEP**: 
-    * *Stimulus Presentation*: **WORKING - 4/10/2020**
-    * *Data Recording*: **WORKING - 4/10/2020**
-    * *Visualization*:
-    * *Classification Accuracy*:
+    - [X] *Stimulus Presentation*: **WORKING - 4/10/2020**
+    - [X] *Data Recording*: **WORKING - 4/16/2020**
+    - [X] *Visualization*: **WORKING - 4/24/2020**
+    - [ ] *Classification Accuracy*:
