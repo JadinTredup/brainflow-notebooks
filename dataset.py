@@ -12,18 +12,18 @@ from mne.channels import make_standard_montage
 from brainflow.board_shim import BoardShim, BoardIds
 from brainflow.data_filter import DataFilter, FilterTypes, AggOperations
 
-from utils import OPENBCI_STANDARD
+from utils import OPENBCI_STANDARD, SDESIGN
 
 
 class brainflowDataset:
-    def __init__(self, paradigm, subject, board_type):
+    def __init__(self, paradigm, subject, board_type, layout=None):
         # Initialize class variables
         self.paradigm = paradigm
         self.board_type = board_type
-        self.eeg_info = self._get_source_info()
+        self.eeg_info = self._get_source_info(layout)
         self.subject = subject
 
-    def _get_source_info(self):
+    def _get_source_info(self, ch_names=None):
         """ Gets board-specific information from the Brainflow library
 
         Returns:
@@ -34,15 +34,20 @@ class brainflowDataset:
         if self.board_type == 'synthetic':
             eeg_channels = BoardShim.get_eeg_channels(BoardIds.SYNTHETIC_BOARD.value)
             sfreq = BoardShim.get_sampling_rate(BoardIds.SYNTHETIC_BOARD.value)
-            channel_names = ['T7', 'CP5', 'FC5', 'C3', 'C4', 'FC6', 'CP6', 'T8']
+            std_names = ['T7', 'CP5', 'FC5', 'C3', 'C4', 'FC6', 'CP6', 'T8']
         elif self.board_type == 'cyton':
             eeg_channels = BoardShim.get_eeg_channels(BoardIds.CYTON_BOARD.value)
             sfreq = BoardShim.get_sampling_rate(BoardIds.CYTON_BOARD.value)
-            channel_names = OPENBCI_STANDARD[:9]
+            std_names = OPENBCI_STANDARD[:9]
         elif self.board_type == 'daisy':
             eeg_channels = BoardShim.get_eeg_channels(BoardIds.CYTON_DAISY_BOARD.value)
             sfreq = BoardShim.get_sampling_rate(BoardIds.CYTON_DAISY_BOARD.value)
-            channel_names = OPENBCI_STANDARD
+            std_names = OPENBCI_STANDARD
+
+        if ch_names is None:
+            channel_names = std_names
+        else:
+            channel_names = ch_names
 
         return [eeg_channels, sfreq, channel_names]
 

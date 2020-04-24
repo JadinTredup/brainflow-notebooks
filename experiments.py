@@ -169,7 +169,7 @@ class eventRelatedPotential:
             self.markers = [1, 2]
 
     def _setup_graphics(self):
-        self.mywin = visual.Window([1600, 900], monitor='testMonitor', units="deg")
+        self.mywin = visual.Window([3440, 1440], monitor='testMonitor', units="deg")
         if self.erp == 'n170':
             faces = list(map(self._load_image, glob('stim/face_house/faces/*_3.jpg')))
             houses = list(map(self._load_image, glob('stim/face_house/houses/*.3.jpg')))
@@ -256,7 +256,7 @@ class steadyStateEvokedPotentials:
 
     def _setup_graphics(self):
         soa = 3.0
-        self.mywin = visual.Window([1600, 900], monitor='testMonitor', units="deg", wintype='pygame')
+        self.mywin = visual.Window([3440, 1440], monitor='testMonitor', units="deg", wintype='pygame')
         if self.paradigm == 'ssvep':
             grating = visual.GratingStim(win=self.mywin, mask='circle', size=80, sf=0.2)
             grating_neg = visual.GratingStim(win=self.mywin, mask='circle', size=80, sf=0.2, phase=0.5)
