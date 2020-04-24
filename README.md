@@ -32,6 +32,87 @@ pip install arabic_reshaper astunparse distro esprima freetype-py future gevent 
 pip install psychopy --no-deps
 ```
 
+## Using the Notebooks
+The notebooks rely on backend classes that are contained in the `experiments.py` and the `dataset.py` files. To describe 
+how the API works, we will break the notebooks into two parts: data collection and data analysis.
+
+### Data Collection
+Running the data collection has 3 steps:
+1. Setting up the correct stimulus presentation for the desired paradigm.
+2. Initialize the EEG device.
+3. Run the trial(s).
+
+#### 1. Setting up the experiment
+The different types of experiments can all be imported in from the `experiments.py` file. At the moment there are only two paradigms
+available: ERPs and SSVEP. Different experiments can be loaded with the following commands:
+```python
+from experiments import eventRelatedPotential, steadyStateEvokedPotentials
+
+# SSVEP experiment:
+ssvep_exp = steadyStateEvokedPotentials()
+
+# ERP, using the N170 stimuli:
+n170_exp = eventRelatedPotential(erp='n170')
+
+# ERP, using the P300 stimuli:
+p300_exp = eventRelatedPotential(erp='p300')
+```
+
+#### 2. Initialize the EEG device
+As of right now, brainflow supports both the OpenBCI and BrainBit headsets, and there is also a synthetic data source within
+the API itself. The notebooks at the moment only support the OpenBCI and synthetic headsets, but adding the additional setups as they
+come will be easy enough by adding a few lines of code. To initialize the devices:
+```python
+# For the synthetic board
+_exp.initialize_eeg(board_type='synthetic')
+
+# For using the 8-channel Cyton board
+_exp.initialize_eeg(board_type='cyton')
+
+# For using the 16-channel Cyton+Daisy combo
+_exp.initialize_eeg(board_type='daisy')
+```
+
+#### 3. Run data collection
+Now to run the experiment, you must define a subject name, trial duration, and trial number. The subject name and trial 
+number will be used in the save file name for easy access later. **Note:** This portion of the code should always be run 
+in a separate notebook cell. It is set up so that the cell can be repeated over and over again without needing to repeat 
+the previous two steps. It is just recommended to increment the trial number with each pass, and change the subject name 
+accordingly.
+```python
+subject_name = 'test_subject'
+duration = 60
+trial_num = 3
+_exp.run_trial(duration=duration,
+               subject=subject_name,
+               run=trial_num)
+```
+
+#### Full example
+Now putting it all together, if we wanted to run the N170 experiment for a 16-channel configuration, we would need in two 
+separate notebook cells:
+```python
+from experiments import eventRelatedPotential, steadyStateEvokedPotentials
+
+n170_exp = eventRelatedPotential(erp='n170')
+n170_exp.initialize_eeg(board_type='daisy')
+```
+In a separate cell:
+```python
+subject_name = 'test_subject'
+duration = 60
+trial_num = 3
+n170_exp.run_trial(duration=duration,
+                   subject=subject_name,
+                   run=trial_num)
+```
+
+### Data Analysis
+As EEG data analysis differs from paradigm to paradigm, this portion will really only cover the `dataset.py` module. This 
+module loads the data and event files saved by the experiment and combines them into a single object. Brainflow offers some
+filtering and pre-processing functions which will be detailed/utilized in later notebooks, but right now the best practice is
+to use this module to output the unfiltered data as an MNE Raw object and perform filtering within MNE.
+
 ## Available Notebooks
 * **Free Record**: This notebook is to allow you to freely record your own data for any duration for any desired task 
 not included in the notebooks.
