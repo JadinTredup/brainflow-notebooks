@@ -1,16 +1,37 @@
 import os
+import socket
+import platform
 from collections import OrderedDict
 import seaborn as sns
 import pandas as pd
 from matplotlib import pyplot as plt
 
+
 SYNTHETIC_CHANNELS = ['T7', 'CP5', 'FC5', 'C3', 'C4', 'FC6', 'CP6', 'T8']
 
-OPENBCI_STANDARD = ['Fp1', 'Fp2', 'C3', 'C4', 'P7', 'P8', 'O1', 'O2',
-                    'F7' , 'F8' , 'F3', 'F4', 'T7', 'T8', 'P3', 'P4']
+
+OPENBCI_STANDARD_8 = ['Fp1', 'Fp2', 'C3', 'C4', 'P7', 'P8', 'O1', 'O2',
+                      'F7' , 'F8' , 'F3', 'F4', 'T7', 'T8', 'P3', 'P4']
+
+
+OPENBCI_STANDARD_16 = ['Fp1', 'Fp2', 'C3', 'C4', 'P7', 'P8', 'O1', 'O2',
+                       'F7' , 'F8' , 'F3', 'F4', 'T7', 'T8', 'P3', 'P4']
+
+
+BRAINBIT_CHANNELS = ['T3', 'T4', 'O1', 'O2']
+
+
+UNICORN_CHANNELS = ['Fz', 'C3', 'Cz', 'C4', 'Pz', 'PO7', 'Oz', 'PO8']
+
 
 SDESIGN = ['O1',  'PO3',  'P7' , 'CP5', 'CP2', 'P8' ,  'PO4', 'O2',
            'P3', 'FC5', 'C3', 'CP1', 'P4', 'C4', 'FC6', 'CP6']
+
+
+
+USB_LINUX = '/dev/ttyUSB0'
+
+USB_WINDOWS = 'COM3'
 
 
 def get_fns(subject, run, paradigm):
@@ -19,6 +40,33 @@ def get_fns(subject, run, paradigm):
     event_fn = os.path.join('data', f'{subject}_{paradigm}_{run}_EVENTS.csv')
 
     return data_fn, event_fn
+
+
+def get_openbci_usb(usb_port):
+    """Gets the standard USB port for the OpenBCI USB dongle
+    """
+    if usb_port is None:
+        if platform.system() == 'Linux':
+            usb_port = USB_LINUX
+        elif platform.system() == 'Windows':
+            usb_port = USB_WINDOWS
+        elif platform.system() == 'Darwin':
+            print('Please provide name of usb port for Mac OS')
+            return None
+
+    return usb_port
+
+
+def get_openbci_ip(address, port):
+    if address == None:
+        address = '192.168.4.1'
+
+    if port == None:
+        s = socket.socket()
+        s.bind(('', 0))
+        port = s.getsockname()[1]
+
+    return address, port
 
 
 def plot_conditions(epochs, conditions=OrderedDict(), ci=97.5, n_boot=1000,

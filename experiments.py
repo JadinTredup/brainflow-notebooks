@@ -1,4 +1,5 @@
 import os
+import platform
 from glob import glob
 from time import time, sleep
 from random import choice
@@ -9,40 +10,49 @@ from psychopy import visual, core, event
 
 from brainflow import DataFilter, BoardShim, BoardIds, BrainFlowInputParams
 
-from utils import get_fns
+from utils import get_fns, get_openbci_usb, get_openbci_ip
 
 
-STD_PORT = '/dev/ttyUSB0'
+def get_board_info(board_type, usb_port=None, ip_addr=None, ip_port=None, serial_num=None):
 
-
-def get_board_info(board_type='synthetic', connection='usb', usb_port=None):
-    """ Gets the BarinFlow ID for the respective OpenBCI board in use
-
-    Parameters:
-        board_type (str): Type of base OpenBCI board (options: synthetic, cyton, daisy)
-        connection (str): Connection method, either via USB dongle or the Wifi board
-
-    Returns:
-        board_id (int): Id value for the board in the BrainFlow API
-        """
     params = BrainFlowInputParams()
-    if usb_port is None:
-        usb_port = STD_PORT
 
     if board_type == 'synthetic':
         board_id = BoardIds.SYNTHETIC_BOARD.value
+
+    elif board_type == 'ganglion':
+        board_id = BoardIds.GANGLION_BOARD.value
+        params.serial_port = get_openbci_usb(usb_port)
+
     elif board_type == 'cyton':
-        if connection == 'usb':
-            board_id = BoardIds.CYTON_BOARD.value
-            params.serial_port = usb_port
-        elif connection == 'wifi':
-            board_id = BoardIds.CYTON_WIFI_BOARD.value
-    elif board_type == 'daisy':
-        if connection == 'usb':
-            board_id = BoardIds.CYTON_DAISY_BOARD.value
-            params.serial_port = usb_port
-        elif connection == 'wifi':
-            board_id = BoardIds.CYTON_DAISY_WIFI_BOARD.value
+        board_id = BoardIds.CYTON_BOARD.value
+        params.serial_port = get_openbci_usb(usb_port)
+
+    elif board_type == 'cyton_daisy':
+        board_id = BoardIds.CYTON_DAISY_BOARD.value
+        params.serial_port = get_openbci_usb(usb_port)
+
+    elif board_type == 'ganglion_wifi':
+        board_id = BoardIds.GANGLION_WIFI_BOARD.value
+        params.ip_address, params.ip_port = get_openbci_ip(ip_addr, ip_port)
+
+    elif board_type == 'cyton_wifi':
+        board_id = BoardIds.CYTON_WIFI_BOARD.value
+        params.ip_address, params.ip_port = get_openbci_ip(ip_addr, ip_port)
+
+    elif board_type == 'cyton_daisy_wifi':
+        board_id = BoardIds.CYTON_DAISY_WIFI_BOARD.value
+        params.ip_address, params.ip_port = get_openbci_ip(ip_addr, ip_port)
+
+    elif board_type == 'brainbit':
+        board_id = BoardIds.BRAINBIT_BOARD.value
+        if serial_num:
+            params.other_info = serial_num
+
+    elif board_type == 'unicorn':
+        board_id = BoardIds.UNICORN_BOARD.value
+        if serial_num:
+            params.other_info = serial_num
 
     return board_id, params
 
@@ -102,8 +112,8 @@ class freeRecording:
         self.board = None
         self._setup_session(activity)
 
-    def initialize_eeg(self, board_type='synthetic', connection_method='usb', usb_port=None):
-        self.board_id, self.params = get_board_info(board_type, connection_method, usb_port)
+    def initialize_eeg(self, board_type='synthetic', usb_port=None, ip_addr=None, ip_port=None, serial_num=None):
+        self.board_id, self.params = get_board_info(board_type, usb_port, ip_addr, ip_port, serial_num)
         self.board = BoardShim(self.board_id, self.params)
         self.board.prepare_session()
         self.board_prepared = True
@@ -145,8 +155,8 @@ class eventRelatedPotential:
         self.max_trials = 500
         self._setup_trial()
 
-    def initialize_eeg(self, board_type='synthetic', connection_method='usb', usb_port=None):
-        self.board_id, self.params = get_board_info(board_type, connection_method, usb_port)
+    def initialize_eeg(self, board_type='synthetic', usb_port=None, ip_addr=None, ip_port=None, serial_num=None):
+        self.board_id, self.params = get_board_info(board_type, usb_port, ip_addr, ip_port, serial_num)
         self.board = BoardShim(self.board_id, self.params)
         self.board.prepare_session()
         self.board_prepared = True
@@ -243,9 +253,9 @@ class steadyStateEvokedPotentials:
         self.max_trials = 500
         self._setup_trials()
 
-    def initialize_eeg(self, board_type='synthetic', connection_method='usb', usb_port=None):
+    def initialize_eeg(self, board_type='synthetic', usb_port=None, ip_addr=None, ip_port=None, serial_num=None):
         BoardShim.enable_dev_board_logger()
-        self.board_id, self.params = get_board_info(board_type, connection_method, usb_port)
+        self.board_id, self.params = get_board_info(board_type, usb_port, ip_addr, ip_port, serial_num)
         self.board = BoardShim(self.board_id, self.params)
         self.board.prepare_session()
 

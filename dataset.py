@@ -12,8 +12,7 @@ from mne.channels import make_standard_montage
 from brainflow.board_shim import BoardShim, BoardIds
 from brainflow.data_filter import DataFilter, FilterTypes, AggOperations
 
-from utils import OPENBCI_STANDARD, SDESIGN
-
+import utils
 
 class brainflowDataset:
     def __init__(self, paradigm, subject, board_type, layout=None):
@@ -23,7 +22,7 @@ class brainflowDataset:
         self.eeg_info = self._get_source_info(layout)
         self.subject = subject
 
-    def _get_source_info(self, ch_names=None):
+    def _get_source_info(self, layout=None):
         """ Gets board-specific information from the Brainflow library
 
         Returns:
@@ -32,24 +31,58 @@ class brainflowDataset:
             channel_names
         """
         if self.board_type == 'synthetic':
-            eeg_channels = BoardShim.get_eeg_channels(BoardIds.SYNTHETIC_BOARD.value)
-            sfreq = BoardShim.get_sampling_rate(BoardIds.SYNTHETIC_BOARD.value)
-            std_names = ['T7', 'CP5', 'FC5', 'C3', 'C4', 'FC6', 'CP6', 'T8']
-        elif self.board_type == 'cyton':
-            eeg_channels = BoardShim.get_eeg_channels(BoardIds.CYTON_BOARD.value)
-            sfreq = BoardShim.get_sampling_rate(BoardIds.CYTON_BOARD.value)
-            std_names = OPENBCI_STANDARD[:9]
-        elif self.board_type == 'daisy':
-            eeg_channels = BoardShim.get_eeg_channels(BoardIds.CYTON_DAISY_BOARD.value)
-            sfreq = BoardShim.get_sampling_rate(BoardIds.CYTON_DAISY_BOARD.value)
-            std_names = OPENBCI_STANDARD
+            board_id = BoardIds.SYNTHETIC_BOARD.value
+            eeg_channels, sfreq= self._get_board_info(board_id)
+            channel_names = utils.SYNTHETIC_CHANNELS
 
-        if ch_names is None:
-            channel_names = std_names
-        else:
-            channel_names = ch_names
+        elif self.board_type == 'ganglion':
+            board_id = BoardIds.GANGLION_BOARD.value
+            eeg_channels, sfreq = self._get_board_info(board_id)
+
+        elif self.board_type == 'cyton':
+            board_id = BoardIds.CYTON_BOARD.value
+            eeg_channels, sfreq = self._get_board_info(board_id)
+            channel_names = utils.OPENBCI_STANDARD_8
+
+        elif self.board_type == 'cyton_daisy':
+            board_id = BoardIds.CYTON_DAISY_BOARD.value
+            eeg_channels, sfreq = self._get_board_info(board_id)
+            channel_names = utils.OPENBCI_STANDARD_16
+
+        elif self.board_type == 'ganglion_wifi':
+            board_id = BoardIds.GANGLION_WIFI_BOARD.value
+            eeg_channels, sfreq = self._get_board_info(board_id)
+
+        elif self.board_type == 'cyton_wifi':
+            board_id = BoardIds.CYTON_WIFI_BOARD.value
+            eeg_channels, sfreq = self._get_board_info(board_id)
+            channel_names = utils.OPENBCI_STANDARD_8
+
+        elif self.board_type == 'cyton_daisy_wifi':
+            board_id = BoardIds.CYTON_DAISY_WIFI_BOARD.value
+            eeg_channels, sfreq = self._get_board_info(board_id)
+            channel_names = utils.OPENBCI_STANDARD_16
+
+        elif self.board_type == 'brainbit':
+            board_id = BoardIds.BRAINBIT_BOARD.value
+            eeg_channels, sfreq = self._get_board_info(board_id)
+            channel_names = utils.BRAINBIT_CHANNELS
+
+        elif self.board_type == 'unicorn':
+            board_id = BoardIds.UNICORN_BOARD.value
+            eeg_channels, sfreq, channel_names = self._get_board_info(board_id)
+            channel_names = utils.UNICORN_CHANNELS
+
+
+        if layout:
+            channel_names = layout
 
         return [eeg_channels, sfreq, channel_names]
+
+    def _get_board_info(self, id):
+        channels = BoardShim.get_eeg_channels(id)
+        sfreq = BoardShim.get_sampling_rate(id)
+        return channels, sfreq
 
     def _load_session_data(self, subject_name, run):
         """Loads the session data and event files for a single session for a single subject. The first 5 seconds
@@ -172,7 +205,7 @@ class brainflowDataset:
         raw.set_montage(montage)
         return raw
 
-    def load_session_to_raw(self, subject_name, run, preprocess=True):
+    def load_session_to_raw(self, subject_name, run, preprocess=False):
         # Load data
         data, events = self._load_session_data(subject_name, run)
         # Scale data

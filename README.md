@@ -64,13 +64,25 @@ the API itself. The notebooks at the moment only support the OpenBCI and synthet
 come will be easy enough by adding a few lines of code. To initialize the devices:
 ```python
 # For the synthetic board
-_exp.initialize_eeg(board_type='synthetic')
+exp.initialize_eeg(board_type='synthetic')
+
+# For the Ganglion board:
+exp.initialize_eeg(board_type='ganglion')           # Using USB
+exp.initialize_eeg(board_type='ganglion_wifi')      # Using Wifi
 
 # For using the 8-channel Cyton board
-_exp.initialize_eeg(board_type='cyton')
+exp.initialize_eeg(board_type='cyton')              # Using USB
+exp.initialize_eeg(board_type='cyton_wifi')         # Using Wifi
 
 # For using the 16-channel Cyton+Daisy combo
-_exp.initialize_eeg(board_type='daisy')
+exp.initialize_eeg(board_type='cyton_daisy')        # Using USB
+exp.initialize_eeg(board_type='cyton_daisy_wifi')   # Using Wifi
+
+# For using the BrainBit headband:
+exp.initialize_eeg(board_type='brainbit')
+
+# For using the Unicorn device
+exp.initialize_eeg(board_type='unicorn')
 ```
 
 #### 3. Run data collection
@@ -83,9 +95,9 @@ accordingly.
 subject_name = 'test_subject'
 duration = 60
 trial_num = 3
-_exp.run_trial(duration=duration,
-               subject=subject_name,
-               run=trial_num)
+exp.run_trial(duration=duration,
+              subject=subject_name,
+              run=trial_num)
 ```
 
 #### Full example
@@ -111,7 +123,20 @@ n170_exp.run_trial(duration=duration,
 As EEG data analysis differs from paradigm to paradigm, this portion will really only cover the `dataset.py` module. This 
 module loads the data and event files saved by the experiment and combines them into a single object. Brainflow offers some
 filtering and pre-processing functions which will be detailed/utilized in later notebooks, but right now the best practice is
-to use this module to output the unfiltered data as an MNE Raw object and perform filtering within MNE.
+to use this module to output the unfiltered data as an MNE Raw object and perform filtering within MNE. To do this, you must 
+define the subject and run numbers for which you want to load the data, the paradigm recorded, and the board type. There is an optional 
+`layout` parameter which can be used for passing nonstandard arrangements of channel names for the OpenBCI headsets. After 
+loading the dataset, you can convert it to a raw type, only selecting the runs you wish to keep.
+
+```python
+subject_name = 'synthetic_test'
+runs = [0, 1, 2]
+dataset_n170 = branflowDatasety(paradigm='n170',
+                                subject=subject_name,
+                                board_type='synthetic')   
+raw = dataset_n170.load_subject_to_raw(subject_name, runs)
+```
+
 
 ## Available Notebooks
 * **Free Record**: This notebook is to allow you to freely record your own data for any duration for any desired task 
@@ -120,6 +145,20 @@ not included in the notebooks.
 * **P300**:
 * **SSVEP**:
 
+## Initializing the Boards
+Each board has optional parameters that can be passed to the `exp.initialize_eeg()` method. 
+
+**OpenBCI:**
+For the OpenBCI boards, there is an option to pass the USB port needed for the dongle, but there is a default port for 
+both Linux and Windows so it is optional on those two operating systems. The Ganglion however, also needs a layout of EEG 
+electrode locations passed to it, as there is not a standardized 4-channel configuration. Additionally, if using the Wifi 
+shield in *DIRECT* mode, the API uses a default IP address and finds an open port. If ot using in direct mode, you must pass
+the ip address of the board to the `ip_addr` parameter.
+
+**BrainBit and Unicorn:** BrainBit and Unicorn both have the option of passing their serial numbers to the `serial_num` 
+parameter. This makes it possible to connect multiple headsets at the same time.
+
+
 
 # Repository Status
 The integration of the stimulus presentations with OpenBCI/Brainflow is work I have already completed and tested. This is 
@@ -127,11 +166,50 @@ just a porting and reformatting of that code to fit the NeurotechX EEG-Notebooks
 the experiments run 100% smoothly within the notebooks. I will work on verifying that within the coming days and will update
 this section accordingly.
 
+## Supported Board Status
+Here is a list of all of the boards brainFlow supports and their status of being integrated into the notebooks:
+
+**OpenBCI Ganglion:**
+- [X] Added
+- [ ] Connection tested
+- [ ] Recording tested
+- [ ] Data loading tested
+
+**OpenBCI Cyton:**
+- [X] Added
+- [X] Connection tested
+- [X] Recording tested
+- [X] Data loading tested
+
+**OpenBCI Cyton and Daisy:**
+- [X] Added
+- [X] Connection tested
+- [X] Recording tested
+- [X] Data loading tested
+
+**OpenBCI Wifi:**
+- [X] Added
+- [ ] Connection tested
+- [ ] Recording tested
+- [ ] Data loading tested
+
+**NeuroMD BrainBit:**
+- [X] Added
+- [ ] Connection tested
+- [ ] Recording tested
+- [ ] Data loading tested
+
+**G.TEC Unicorn:**
+- [X] Added
+- [ ] Connection tested
+- [ ] Recording tested
+- [ ] Data loading tested
+
 ## General TO-DO:
 
 - [ ] **Combine data and events during stream:** as of right now the data and events are saved in separate files during recording and then segmented and lined up 
 when loading the entire dataset. This can not be done in the same way as for the Muse because LSL is not beting used here.
-- [ ] **Add support for BrainBit:** Add the necessary lines to functions in both `experiments.py` and `dataset.py` to 
+- [X] **Add support for BrainBit:** Add the necessary lines to functions in both `experiments.py` and `dataset.py` to 
 accommodate the BrainBit headset. 
 
 ## Notebook Statuses
