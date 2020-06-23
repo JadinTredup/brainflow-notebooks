@@ -21,7 +21,7 @@ def present(duration=120, eeg=None, save_fn=None):
 
     # Setup trial list
     stim_freq = np.random.binomial(1, 0.5, n_trials)
-    trials = DataFrame(dict(image_type=stim_freq, timestamp=np.zeros(n_trials)))
+    trials = DataFrame(dict(stim_freq=stim_freq, timestamp=np.zeros(n_trials)))
 
     # Set up graphics
     mywin = visual.Window([1600, 900], monitor='testMonitor', units="deg")

@@ -106,7 +106,6 @@ class EEG:
         sleep(5)
 
     def _stop_brainflow(self):
-        print("Saving")
         data = self.board.get_board_data()
         data = data.T
         ch_names = BRAINFLOW_CHANNELS[self.device_name]
@@ -120,7 +119,6 @@ class EEG:
         # Subtract five seconds of settling time from beginning
         total_data = total_data[5*self.sfreq:]
         data_df = pd.DataFrame(total_data, columns=['timestamps'] + ch_names + ['stim'])
-        print(self.save_fn)
         data_df.to_csv(self.save_fn)
 
     def _brainflow_push_sample(self, marker):
@@ -141,8 +139,6 @@ class EEG:
         #elif self.backend == 'muselsl':
 
     def stop(self):
-        print("Stop")
         if self.backend == 'brainflow':
-            print("Stop bflow")
             self._stop_brainflow()
         #elif self.backend == 'muselsl':

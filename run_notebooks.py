@@ -35,7 +35,7 @@ def intro_prompt():
 
     open_bci_list = ['cyton', 'cyton_daisy', 'ganglion']
 
-    experiments = ['visual_n170', 'visual_p300', 'ssvep']
+    experiments = ['visual_n170', 'visual_p300', 'visual_ssvep']
 
     print("Welcome to NeurotechX EEG Notebooks. \n"
           "Please select enter the integer value corresponding to your EEG device: \n"
