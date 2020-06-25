@@ -19,8 +19,7 @@ def present(duration=120, eeg=None, save_fn=None):
     markernames = [1, 2]
 
     # start the EEG stream, will delay 5 seconds to let signal settle
-    if eeg:
-        eeg.start(fn=save_fn)
+    if eeg: eeg.start(fn=save_fn)
 
     # Setup trial list
     image_type = np.random.binomial(1, 0.5, n_trials)
@@ -48,7 +47,7 @@ def present(duration=120, eeg=None, save_fn=None):
         image.draw()
 
         # Push sample
-        eeg.push_sample(marker=markernames[label], timestamp=time())
+        if eeg: eeg.push_sample(marker=markernames[label], timestamp=time())
         mywin.flip()
 
         # offset
@@ -60,5 +59,5 @@ def present(duration=120, eeg=None, save_fn=None):
         event.clearEvents()
 
     # Cleanup
-    eeg.stop()
+    if eeg: eeg.stop()
     mywin.close()
