@@ -30,7 +30,7 @@ def present(duration=120, eeg=None, save_fn=None):
         return visual.ImageStim(win=mywin, image=fn)
 
     # Setup graphics
-    mywin = visual.Window([1600, 900], monitor='testMonitor', units="deg")
+    mywin = visual.Window([1600, 900], monitor='testMonitor', units="deg", fullscr=True)
 
     targets = list(map(load_image, glob(os.path.join(CAT_DOG, 'target-*.jpg'))))
     nontargets = list(map(load_image, glob(os.path.join(CAT_DOG, 'nontarget-*.jpg'))))

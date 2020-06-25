@@ -24,7 +24,7 @@ def present(duration=120, eeg=None, save_fn=None):
     trials = DataFrame(dict(stim_freq=stim_freq, timestamp=np.zeros(n_trials)))
 
     # Set up graphics
-    mywin = visual.Window([1600, 900], monitor='testMonitor', units="deg")
+    mywin = visual.Window([1600, 900], monitor='testMonitor', units="deg", fullscr=True)
     grating = visual.GratingStim(
         win=mywin, mask='circle', size=80, sf=0.2)
     grating_neg = visual.GratingStim(

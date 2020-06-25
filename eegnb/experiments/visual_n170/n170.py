@@ -31,7 +31,7 @@ def present(duration=120, eeg=None, save_fn=None):
         return visual.ImageStim(win=mywin, image=fn)
 
     # Setup graphics
-    mywin = visual.Window([1600, 900], monitor='testMonitor', units="deg")
+    mywin = visual.Window([1600, 900], monitor='testMonitor', units="deg", fullscr=True)
 
     faces = list(map(load_image, glob(os.path.join(FACE_HOUSE, 'faces', '*_3.jpg'))))
     houses = list(map(load_image, glob(os.path.join(FACE_HOUSE, 'houses', '*.3.jpg'))))

@@ -97,7 +97,8 @@ if __name__=="__main__":
         n170.present(duration=record_duration, eeg=eeg_device, save_fn=save_fn)
     elif experiment == 'visual_p300':
         p300.present(duration=record_duration, eeg=eeg_device, save_fn=save_fn)
-    elif experiment == 'ssvep':
+    elif experiment == 'visual_ssvep':
+        print("here")
         ssvep.present(duration=record_duration, eeg=eeg_device, save_fn=save_fn)
 
 
