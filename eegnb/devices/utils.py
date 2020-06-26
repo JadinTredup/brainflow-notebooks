@@ -3,6 +3,7 @@ import socket
 import platform
 
 
+# Default channel names for the various brainflow devices.
 BRAINFLOW_CHANNELS = {
     'cyton' : [
         'Fp1', 'Fp2', 'C3', 'C4', 'P7', 'P8', 'O1', 'O2'
@@ -23,6 +24,13 @@ BRAINFLOW_CHANNELS = {
 }
 
 def get_openbci_ip(address, port):
+    """ Gets the default IP address for connecting to the OpenBCI wifi shield but also allows
+    users to pass their own values to override the defaults.
+
+    Parameters:
+        address (str): ip address
+        port (str or int): ip port
+    """
     if address == None:
         address = '192.168.4.1'
 
@@ -42,6 +50,13 @@ def get_openbci_usb():
         return input("Please enter USb port for Mac OS")
 
 def create_stim_array(timestamps, markers):
+    """ Creates a stim array which is the lenmgth of the EEG data where the stimuli are lined up
+    with their corresponding EEG sample.
+
+    Parameters:
+        timestamps (array of floats): Timestamps from the EEG data.
+        markers (array of ints): Markers and their associated timestamps.
+        """
     num_samples = len(timestamps)
     stim_array = np.zeros((num_samples, 1))
     for marker in markers:

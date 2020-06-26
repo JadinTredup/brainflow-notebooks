@@ -13,6 +13,8 @@ from brainflow import DataFilter, BoardShim, BoardIds, BrainFlowInputParams
 
 from eegnb.devices.utils import get_openbci_usb, get_openbci_ip, BRAINFLOW_CHANNELS, create_stim_array
 
+
+# list of brainflow devices
 brainflow_devices = [
     'ganglion', 'ganglion_wifi',
     'cyton', 'cyton_wifi',
@@ -23,10 +25,12 @@ brainflow_devices = [
 class EEG:
 
     def __init__(self, device=None):
-        '''
+        """ The initialization function takes the name of the EEG device and determines whether or not
+        the device belongs to the Muse or Brainflow families and initializes the appropriate backend.
+
         Parameters:
             device (str): name of eeg device used for reading data.
-        '''
+        """
         # determine if board uses brainflow or muselsl backend
         self.device_name = device
         self.backend = self._get_backend(self.device_name)
@@ -56,6 +60,14 @@ class EEG:
     #   BrainFlow functions  #
     ##########################
     def _init_brainflow(self, serial_num=None):
+        """ This function initializes the brainflow backend based on the input device name. It calls
+        a utility function to determine the appropriate USB port to use based on the current operating system.
+        Additionally, the system allows for passing a serial number in the case that they want to use either
+        the BraintBit or the Unicorn EEG devices from the brainflow family.
+
+        Parameters:
+             serial_num (str or int): serial number for either the BrainBit or Unicorn devices.
+        """
         # Initialize brainflow parameters
         self.brainflow_params = BrainFlowInputParams()
         if self.device_name == 'ganglion':
@@ -84,16 +96,16 @@ class EEG:
 
         elif self.device_name == 'brainbit':
             self.brainflow_id = BoardIds.BRAINBIT_BOARD.value
-            if serial_num:
-                self.brainflow_params.other_info = serial_num
 
         elif self.device_name == 'unicorn':
             self.brainflow_id = BoardIds.UNICORN_BOARD.value
-            if serial_num:
-                self.brainflow_params.other_info = serial_num
 
         elif self.device_name == 'synthetic':
             self.brainflow_id = BoardIds.SYNTHETIC_BOARD.value
+
+        if serial_num:
+            serial_num = str(serial_num)
+            self.brainflow_params.other_info = serial_num
 
         # Initialize board_shim
         self.sfreq = BoardShim.get_sampling_rate(self.brainflow_id)
@@ -106,16 +118,22 @@ class EEG:
         sleep(5)
 
     def _stop_brainflow(self):
-        data = self.board.get_board_data()
-        data = data.T
+        """This functions kills the brainflow backend and saves the data to a CSV file."""
+
+        # Collect session data
+        data = self.board.get_board_data()      # will clear board buffer
+        data = data.T                           # transpose data
         ch_names = BRAINFLOW_CHANNELS[self.device_name]
         num_channels = len(ch_names)
         eeg_data = data[:, 1:num_channels+1]
         timestamps = data[:, -1]
+
+        # Create a column for the stimuli to append to the EEG data
         stim_array = create_stim_array(timestamps, self.markers)
-        timestamps = timestamps[..., None]
+        timestamps = timestamps[..., None]      # Add an additional dimension so that shapes match
         total_data = np.append(timestamps, eeg_data, 1)
-        total_data = np.append(total_data, stim_array, 1)
+        total_data = np.append(total_data, stim_array, 1)   # Append the stim array to data.
+
         # Subtract five seconds of settling time from beginning
         total_data = total_data[5*self.sfreq:]
         data_df = pd.DataFrame(total_data, columns=['timestamps'] + ch_names + ['stim'])
@@ -126,14 +144,25 @@ class EEG:
         self.markers.append([marker, last_timestamp])
 
     def start(self, fn):
+        """ Starts the EEG device based on the defined backend.
+
+        Parameters:
+            fn (str): name of the file to save the sessions data to.
+        """
         self.save_fn = fn
-        if self.backend == 'brainflow':
+        if self.backend == 'brainflow':     # Start brainflow backend
             self._start_brainflow()
             self.markers = []
         #elif self.backend == 'muselsl':
             #self._start_muse()
 
     def push_sample(self, marker, timestamp):
+        """ Universal method for pushing a marker and its timestamp to store alongside the EEG data.
+
+        Parameters:
+            marker (int): marker number for the stimuli being presented.
+            timestamp (float): timestamp of stimulus onset from time.time() function.
+        """
         if self.backend == 'brainflow':
             self._brainflow_push_sample(marker=marker)
         #elif self.backend == 'muselsl':
