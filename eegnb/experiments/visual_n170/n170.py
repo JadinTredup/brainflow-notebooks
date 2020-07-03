@@ -8,6 +8,7 @@ import numpy as np
 from pandas import DataFrame
 from psychopy import visual, core, event
 
+from eegnb import generate_save_fn
 from eegnb.stimuli import FACE_HOUSE
 
 
@@ -20,7 +21,11 @@ def present(duration=120, eeg=None, save_fn=None):
     markernames = [1, 2]
 
     # start the EEG stream, will delay 5 seconds to let signal settle
-    if eeg: eeg.start(fn=save_fn)
+    if eeg:
+        if save_fn is None: # If no save_fn passed, generate a new unnamed save file
+            save_fn = generate_save_fn(eeg.device_name, 'visual_n170', 'unnamed')
+            print(f'No path for a save file was passed to the experiment. Saving data to {save_fn}')
+        eeg.start(fn=save_fn)
 
     # Setup trial list
     image_type = np.random.binomial(1, 0.5, n_trials)
