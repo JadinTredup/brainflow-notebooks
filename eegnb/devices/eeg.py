@@ -24,7 +24,7 @@ brainflow_devices = [
 
 class EEG:
 
-    def __init__(self, device=None):
+    def __init__(self, device=None,serial_port=None,serial_num=None):
         """ The initialization function takes the name of the EEG device and determines whether or not
         the device belongs to the Muse or Brainflow families and initializes the appropriate backend.
 
@@ -33,6 +33,8 @@ class EEG:
         """
         # determine if board uses brainflow or muselsl backend
         self.device_name = device
+        self.serial_num = serial_num
+        self.serial_port = serial_port
         self.backend = self._get_backend(self.device_name)
         self.initialize_backend()
 
@@ -59,7 +61,7 @@ class EEG:
     ##########################
     #   BrainFlow functions  #
     ##########################
-    def _init_brainflow(self, serial_num=None):
+    def _init_brainflow(self):
         """ This function initializes the brainflow backend based on the input device name. It calls
         a utility function to determine the appropriate USB port to use based on the current operating system.
         Additionally, the system allows for passing a serial number in the case that they want to use either
@@ -103,9 +105,15 @@ class EEG:
         elif self.device_name == 'synthetic':
             self.brainflow_id = BoardIds.SYNTHETIC_BOARD.value
 
-        if serial_num:
-            serial_num = str(serial_num)
+
+        if self.serial_num:
+            serial_num = str(self.serial_num)
             self.brainflow_params.other_info = serial_num
+
+        if self.serial_port:
+            serial_port=str(self.serial_port)
+            self.brainflow_params.serial_port = serial_port
+
 
         # Initialize board_shim
         self.sfreq = BoardShim.get_sampling_rate(self.brainflow_id)
