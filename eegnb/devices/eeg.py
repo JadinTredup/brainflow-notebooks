@@ -5,11 +5,14 @@
 
 """
 from time import sleep
+from multiprocessing import Process
 
 import numpy as np
 import pandas as pd
 
 from brainflow import DataFilter, BoardShim, BoardIds, BrainFlowInputParams
+from muselsl import stream, list_muses, view, record
+from pylsl import StreamInfo, StreamOutlet
 
 from eegnb.devices.utils import get_openbci_usb, get_openbci_ip, BRAINFLOW_CHANNELS, create_stim_array
 
@@ -53,10 +56,28 @@ class EEG:
     #####################
     #   MUSE functions  #
     #####################
-    #def _init_muselsl(self):
-    #def _start_muse(self):
+    def _init_muselsl(self):
+        # Look for muses
+        muses = list_muses()
+        self.muse = muses[0]
+
+        # Start streaming process
+        self.stream_process = Process(target=stream, args=(self.muse['address'],))
+        self.stream_process.start()
+
+    def _start_muse(self, duration):
+        # Create marker stream
+        info = StreamInfo('Markers', 'Markers', 1, 0, 'int32', 'myuidw43536')
+        self.outlet = StreamOutlet(info)
+
+        # Create recording process
+        self.recording = Process(target=record, args=(duration, self.save_fn))
+        self.recording.start()
+
     #def _stop_muse(self):
-    #def _muse_push_sample(self):
+    def _muse_push_sample(self, marker, timestamp):
+        self.outlet.push_sample([marker], timestamp)
+
 
     ##########################
     #   BrainFlow functions  #
@@ -151,7 +172,7 @@ class EEG:
         last_timestamp = self.board.get_current_board_data(1)[-1][0]
         self.markers.append([marker, last_timestamp])
 
-    def start(self, fn):
+    def start(self, duration, fn):
         """ Starts the EEG device based on the defined backend.
 
         Parameters:
@@ -161,8 +182,8 @@ class EEG:
         if self.backend == 'brainflow':     # Start brainflow backend
             self._start_brainflow()
             self.markers = []
-        #elif self.backend == 'muselsl':
-            #self._start_muse()
+        elif self.backend == 'muselsl':
+            self._start_muse(duration)
 
     def push_sample(self, marker, timestamp):
         """ Universal method for pushing a marker and its timestamp to store alongside the EEG data.

@@ -18,13 +18,6 @@ def present(duration=120, eeg=None, save_fn=None):
     record_duration = np.float32(duration)
     markernames = [1, 2]
 
-    # start the EEG stream, will delay 5 seconds to let signal settle
-    if eeg:
-        if save_fn is None:  # If no save_fn passed, generate a new unnamed save file
-            save_fn = generate_save_fn(eeg.device_name, 'visual_ssvep', 'unnamed')
-            print(f'No path for a save file was passed to the experiment. Saving data to {save_fn}')
-        eeg.start(fn=save_fn)
-
     # Setup trial list
     stim_freq = np.random.binomial(1, 0.5, n_trials)
     trials = DataFrame(dict(stim_freq=stim_freq, timestamp=np.zeros(n_trials)))
@@ -120,6 +113,13 @@ def present(duration=120, eeg=None, save_fn=None):
 
     print(('Flickering frequencies (Hz): {}\n'.format(
         [stim_patterns[0]['freq'], stim_patterns[1]['freq']])))
+
+    # start the EEG stream, will delay 5 seconds to let signal settle
+    if eeg:
+        if save_fn is None:  # If no save_fn passed, generate a new unnamed save file
+            save_fn = generate_save_fn(eeg.device_name, 'visual_ssvep', 'unnamed')
+            print(f'No path for a save file was passed to the experiment. Saving data to {save_fn}')
+        eeg.start(record_duration, save_fn)
 
     # Iterate through trials
     start = time()
