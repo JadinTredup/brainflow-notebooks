@@ -44,8 +44,8 @@ class EEG:
     def initialize_backend(self):
         if self.backend == 'brainflow':
             self._init_brainflow()
-        #else:
-            #self._init_muselsl()
+        elif self.backend == 'muselsl'
+            self._init_muselsl()
 
     def _get_backend(self, device_name):
         if (device_name in brainflow_devices):
@@ -194,7 +194,8 @@ class EEG:
         """
         if self.backend == 'brainflow':
             self._brainflow_push_sample(marker=marker)
-        #elif self.backend == 'muselsl':
+        elif self.backend == 'muselsl':
+            self._muse_push_sample(marker=marker)
 
     def stop(self):
         if self.backend == 'brainflow':
