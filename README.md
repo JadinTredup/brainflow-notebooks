@@ -1,5 +1,7 @@
 # Brainflow Notebooks
 
+***NOTE :* This branch of the repo will be deprecated by August 1st, 2020. The new branch which will soon be pushed to Master is currently located [Here](https://github.com/JadinTredup/brainflow-notebooks/tree/OpenBCI-NTX)**
+
 This repository is a collection of EEG experiments which were originally developed by the [NeurotechX](https://neurotechx.com/) 
 organization. The difference between this repository and the [original repository](https://github.com/neurotechx/eeg-notebooks) 
 is that the notebooks have been edited to be compatible with the OpenBCI headset (specifically via the [brainflow API](https://brainflow.readthedocs.io/en/stable/#)).
