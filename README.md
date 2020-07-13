@@ -8,7 +8,7 @@
 * Installation instructions.
 * Setting up your OpenBCI Ultracortex Mark IV headset.
 * First time running the notebooks.
-* Adding an electrode to the Muse headband.
+* Adding an extra electrode to the Muse headband.
 
 ### Running the Notebooks
 The notebooks can be run in one of two ways. The easiest way currently is to run the `run_notebooks.py` script which 
