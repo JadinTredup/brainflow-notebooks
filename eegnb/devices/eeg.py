@@ -4,6 +4,10 @@
     2.
 
 """
+
+import os,sys
+
+import time
 from time import sleep
 from multiprocessing import Process
 
@@ -44,39 +48,54 @@ class EEG:
     def initialize_backend(self):
         if self.backend == 'brainflow':
             self._init_brainflow()
-        #else:
-            #self._init_muselsl()
+        elif self.backend == 'muselsl':
+            self._init_muselsl()
 
     def _get_backend(self, device_name):
         if (device_name in brainflow_devices):
             return 'brainflow'
-        else:
-            return 'muse'
+        elif device_name == 'muse':
+            return 'muselsl'
 
     #####################
     #   MUSE functions  #
     #####################
     def _init_muselsl(self):
-        # Look for muses
-        muses = list_muses()
-        self.muse = muses[0]
+        # Currently there's nothing we need to do here. However keeping the
+        # option open to add things with this init method.
+        pass
 
-        # Start streaming process
-        self.stream_process = Process(target=stream, args=(self.muse['address'],))
-        self.stream_process.start()
 
     def _start_muse(self, duration):
-        # Create marker stream
-        info = StreamInfo('Markers', 'Markers', 1, 0, 'int32', 'myuidw43536')
-        self.outlet = StreamOutlet(info)
 
-        # Create recording process
+        if sys.platform in ["linux", "linux2", "darwin"]:
+
+          # Look for muses
+          muses = list_muses()
+          #self.muse = muses[0]
+
+          # Start streaming process
+          self.stream_process = Process(target=stream, args=(self.muses[0]['address'],))
+          self.stream_process.start()
+
+        # Create markers stream outlet
+        self.muse_StreamInfo = StreamInfo('Markers', 'Markers', 1, 0, 'int32', 'myuidw43536')
+        self.muse_StreamOutlet = StreamOutlet(self.muse_StreamInfo)
+
+        # Start a background process that will stream data from the first available Muse
+        print("starting background recording process")
+        print('will save to file: %s' %self.save_fn)
         self.recording = Process(target=record, args=(duration, self.save_fn))
         self.recording.start()
 
-    #def _stop_muse(self):
+
+    def _stop_muse(self):
+        
+        pass
+
+
     def _muse_push_sample(self, marker, timestamp):
-        self.outlet.push_sample([marker], timestamp)
+        self.muse_StreamOutlet.push_sample(marker, timestamp)
 
 
     ##########################
@@ -172,7 +191,7 @@ class EEG:
         last_timestamp = self.board.get_current_board_data(1)[-1][0]
         self.markers.append([marker, last_timestamp])
 
-    def start(self, duration, fn):
+    def start(self, fn,duration=None):
         """ Starts the EEG device based on the defined backend.
 
         Parameters:
@@ -194,9 +213,13 @@ class EEG:
         """
         if self.backend == 'brainflow':
             self._brainflow_push_sample(marker=marker)
-        #elif self.backend == 'muselsl':
+        elif self.backend == 'muselsl':
+            self._muse_push_sample(marker=marker,timestamp=timestamp)
+
 
     def stop(self):
         if self.backend == 'brainflow':
             self._stop_brainflow()
-        #elif self.backend == 'muselsl':
+        elif self.backend == 'muselsl':
+            pass
+

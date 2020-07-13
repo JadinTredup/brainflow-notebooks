@@ -39,7 +39,7 @@ def present(duration=120, eeg=None, save_fn=None):
         if save_fn is None:  # If no save_fn passed, generate a new unnamed save file
             save_fn = generate_save_fn(eeg.device_name, 'visual_n170', 'unnamed')
             print(f'No path for a save file was passed to the experiment. Saving data to {save_fn}')
-        eeg.start(record_duration, save_fn)
+        eeg.start(save_fn,duration=record_duration)
 
     # Start EEG Stream, wait for signal to settle, and then pull timestamp for start point
     start = time()
@@ -55,7 +55,14 @@ def present(duration=120, eeg=None, save_fn=None):
         image.draw()
 
         # Push sample
-        if eeg: eeg.push_sample(marker=markernames[label], timestamp=time())
+        if eeg: 
+            timestamp = time()
+            if eeg.backend == 'muselsl':
+                marker = [markernames[label]]
+            else:
+                marker = markernames[label]
+            eeg.push_sample(marker=marker, timestamp=timestamp)
+    
         mywin.flip()
 
         # offset
