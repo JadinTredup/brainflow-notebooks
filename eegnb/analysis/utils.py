@@ -4,11 +4,14 @@ from collections import OrderedDict
 
 from mne import create_info, concatenate_raws
 from mne.io import RawArray
-from mne.channels import read_montage
+from mne.channels import make_standard_montage
 import pandas as pd
 import numpy as np
 import seaborn as sns
 from matplotlib import pyplot as plt
+
+from eegnb import DATA_DIR
+from eegnb.devices.utils import CHANNEL_INDICES, STIM_INDICES, SAMPLE_FREQS
 
 
 sns.set_context('talk')
@@ -49,7 +52,6 @@ def load_muse_csv_as_raw(filename, sfreq=256., ch_ind=[0, 1, 2, 3],
 
         # type of each channels
         ch_types = ['eeg'] * n_channel + ['stim']
-        montage = read_montage('standard_1005')
 
         # get data and exclude Aux channel
         data = data.values[:, ch_ind + [stim_ind]].T
@@ -59,11 +61,13 @@ def load_muse_csv_as_raw(filename, sfreq=256., ch_ind=[0, 1, 2, 3],
 
         # create MNE object
         info = create_info(ch_names=ch_names, ch_types=ch_types,
-                           sfreq=sfreq, montage=montage, verbose=verbose)
+                           sfreq=sfreq, verbose=verbose)
         raw.append(RawArray(data=data, info=info, verbose=verbose))
 
     # concatenate all raw objects
     raws = concatenate_raws(raw, verbose=verbose)
+    montage = make_standard_montage('standard_1005')
+    raws.set_montage(montage)
 
     return raws
 
@@ -101,7 +105,72 @@ def load_data_muse(data_dir=None, subject_nb=1, session_nb=1, sfreq=256.,
                                 replace_ch_names=replace_ch_names, verbose=verbose)
 
 
-#def load_data_brainflow(data_dir, subject_id, session_nb, sfreq,
+def load_brainflow_csv_as_raw(filename, sfreq, ch_ind, stim_ind,
+                              replace_ch_names=None, verbose=1):
+
+    n_channel = len(ch_ind)
+    raw = []
+    for fn in filename:
+        # Read the file
+        data = pd.read_csv(fn, index_col=0)
+
+        # Channel names and types
+        ch_names = list(data.columns)[1:n_channel+1] + ['stim']
+        ch_types = ['eeg'] * n_channel + ['stim']
+
+        if replace_ch_names is not None:
+            ch_names = [c if c not in replace_ch_names.keys()
+                        else replace_ch_names[c] for c in ch_names]
+
+        # Transpose EEG data and convert from uV to Volts
+        data = data.values[:, ch_ind + [stim_ind]].T
+        data[:-1] *= 1e-6
+
+        # create MNE object
+        info = create_info(ch_names=ch_names, ch_types=ch_types, sfreq=sfreq,verbose=1)
+        raw.append(RawArray(data=data, info=info, verbose=1))
+
+    raws = concatenate_raws(raw, verbose=verbose)
+    montage = make_standard_montage('standard_1005')
+    raws.set_montage(montage)
+
+    return raws
+
+
+def load_data(subject_id, session_nb, board_name, experiment, replace_ch_names=None, verbose=1):
+    """Load CSV files from the /data directory into a Raw object.
+    Args:
+        data_dir (str): directory inside /data that contains the
+            CSV files to load, e.g., 'auditory/P300'
+    Keyword Args:
+        subject_id (int or str): subject number. If 'all', load all
+            subjects.
+        session_nb (int or str): session number. If 'all', load all
+            sessions.
+        replace_ch_names (dict or None): dictionary containing a mapping to
+            rename channels. Useful when an external electrode was used.
+    Returns:
+        (mne.io.array.array.RawArray): loaded EEG
+    """
+
+
+    if subject_id == 'all':
+        subject_id = '*'
+    if session_nb == 'all':
+        session_nb = '*'
+
+    data_path = os.path.join(DATA_DIR, experiment, subject_id, f'{board_name}_TRIAL_{session_nb}.csv')
+    fnames = glob(data_path)
+
+    sfreq = SAMPLE_FREQS[board_name]
+    ch_ind = CHANNEL_INDICES[board_name]
+    stim_ind = STIM_INDICES[board_name]
+
+    if board_name == 'muse':
+        return load_muse_csv_as_raw(fnames, sfreq, ch_ind, stim_ind, replace_ch_names, verbose)
+    else:
+        return load_brainflow_csv_as_raw(fnames, sfreq, ch_ind, stim_ind, replace_ch_names, verbose)
+
 
 
 def plot_conditions(epochs, conditions=OrderedDict(), ci=97.5, n_boot=1000,

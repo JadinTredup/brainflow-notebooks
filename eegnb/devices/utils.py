@@ -4,13 +4,13 @@ import platform
 
 
 # Default channel names for the various brainflow devices.
-BRAINFLOW_CHANNELS = {
+EEG_CHANNELS = {
     'cyton' : [
-        'Fp1', 'Fp2', 'C3', 'C4', 'P7', 'P8', 'O1', 'O2'
+        'Fp1', 'Fp2', 'C3', 'C4', 'P7', 'P8', 'O1', 'O2',
     ],
     'cyton_daisy' : [
         'Fp1', 'Fp2', 'C3', 'C4', 'P7', 'P8', 'O1', 'O2',
-        'F7' , 'F8' , 'F3', 'F4', 'T7', 'T8', 'P3', 'P4'
+        'F7' , 'F8' , 'F3', 'F4', 'T7', 'T8', 'P3', 'P4',
     ],
     'brainbit' : [
         'T3', 'T4', 'O1', 'O2'
@@ -21,6 +21,31 @@ BRAINFLOW_CHANNELS = {
     'synthetic':[
         'T7', 'CP5', 'FC5', 'C3', 'C4', 'FC6', 'CP6', 'T8'
     ]
+}
+
+BRAINFLOW_CHANNELS = {
+    'cyton': EEG_CHANNELS['cyton'] + ['accel_0', 'accel_1', 'accel_2'],
+    'cyton_daisy': EEG_CHANNELS['cyton_daisy'] + ['accel_0', 'accel_1', 'accel_2'],
+}
+
+CHANNEL_INDICES = {
+    'muse': [0, 1, 2, 3],
+    'cyton': [1, 2, 3, 4, 5, 6, 7, 8],
+    'cyton_daisy': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    'brainbit': [],
+
+}
+
+STIM_INDICES = {
+    'muse': 5,
+    'cyton': 12,
+    'cyton_daisy': 20,
+}
+
+SAMPLE_FREQS = {
+    'muse': 256,
+    'cyton': 256,
+    'cyton_daisy': 128
 }
 
 def get_openbci_ip(address, port):
