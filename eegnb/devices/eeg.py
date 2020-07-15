@@ -185,7 +185,7 @@ class EEG:
         # Subtract five seconds of settling time from beginning
         total_data = total_data[5*self.sfreq:]
         data_df = pd.DataFrame(total_data, columns=['timestamps'] + ch_names + ['stim'])
-        data_df.to_csv(self.save_fn)
+        data_df.to_csv(self.save_fn, index=False)
 
     def _brainflow_push_sample(self, marker):
         last_timestamp = self.board.get_current_board_data(1)[-1][0]

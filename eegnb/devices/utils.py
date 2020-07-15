@@ -30,16 +30,16 @@ BRAINFLOW_CHANNELS = {
 
 CHANNEL_INDICES = {
     'muse': [0, 1, 2, 3],
-    'cyton': [1, 2, 3, 4, 5, 6, 7, 8],
-    'cyton_daisy': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
+    'cyton': [0, 1, 2, 3, 4, 5, 6, 7],
+    'cyton_daisy': [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
     'brainbit': [],
 
 }
 
 STIM_INDICES = {
-    'muse': 5,
-    'cyton': 12,
-    'cyton_daisy': 20,
+    'muse': 4,
+    'cyton': 11,
+    'cyton_daisy': 19,
 }
 
 SAMPLE_FREQS = {
