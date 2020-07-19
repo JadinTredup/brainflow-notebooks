@@ -80,7 +80,7 @@ def load_data(subject_id, session_nb, board_name, experiment, replace_ch_names=N
     ch_ind = CHANNEL_INDICES[board_name]
     stim_ind = STIM_INDICES[board_name]
 
-    load_csv_as_raw(fnames, sfreq, ch_ind, stim_ind, replace_ch_names, verbose)
+    return load_csv_as_raw(fnames, sfreq, ch_ind, stim_ind, replace_ch_names, verbose)
 
 
 
