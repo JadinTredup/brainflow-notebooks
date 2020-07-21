@@ -5,7 +5,7 @@
 ### Tutorials:
 ***Coming Soon*** we will have the following tutorials available:
 
-* Installation instructions.
+* Installation instructions: [Windows](https://github.com/JadinTredup/brainflow-notebooks/blob/OpenBCI-NTX/tutorials/Windows_Installation.md)
 * Setting up your OpenBCI Ultracortex Mark IV headset.
 * First time running the notebooks.
 * Adding an extra electrode to the Muse headband.
